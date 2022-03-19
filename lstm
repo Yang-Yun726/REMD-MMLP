@@ -1,0 +1,345 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2020-12-13T07:10:54.181215Z",
+     "start_time": "2020-12-13T07:01:46.177078Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "E:\\aconda\\aconda\\lib\\site-packages\\ipykernel_launcher.py:3: FutureWarning: The pandas.datetime class is deprecated and will be removed from pandas in a future version. Import from datetime module instead.\n",
+      "  This is separate from the ipykernel package so we can avoid doing imports until\n",
+      "E:\\aconda\\aconda\\lib\\site-packages\\ipykernel_launcher.py:17: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1) Test RMSE:0.951\n",
+      "2) Test RMSE:0.961\n",
+      "3) Test RMSE:0.945\n",
+      "4) Test RMSE:0.947\n",
+      "5) Test RMSE:0.966\n",
+      "           rmse\n",
+      "count  5.000000\n",
+      "mean   0.954135\n",
+      "std    0.009271\n",
+      "min    0.944569\n",
+      "25%    0.947214\n",
+      "50%    0.951423\n",
+      "75%    0.961204\n",
+      "max    0.966263\n"
+     ]
+    },
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Time used: 547.9617644\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "E:\\aconda\\aconda\\lib\\site-packages\\ipykernel_launcher.py:150: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead\n"
+     ]
+    }
+   ],
+   "source": [
+    "# %load 更健壮的LSTM案例.py\n",
+    "from pandas import read_csv\n",
+    "from pandas import datetime\n",
+    "from pandas import concat\n",
+    "from pandas import DataFrame\n",
+    "from pandas import Series\n",
+    "from sklearn.metrics import mean_squared_error\n",
+    "from sklearn.preprocessing import MinMaxScaler\n",
+    "from keras.models import Sequential\n",
+    "from keras.layers import Dense\n",
+    "from keras.layers import LSTM\n",
+    "from math import sqrt\n",
+    "from matplotlib import pyplot\n",
+    "import numpy\n",
+    "import time\n",
+    "import pandas as pd\n",
+    "start = time.clock()\n",
+    "\n",
+    "\n",
+    "# 读取时间数据的格式化\n",
+    "#def parser(x):\n",
+    "    #return datetime.strptime(x, '%Y/%m/%d')\n",
+    "\n",
+    "\n",
+    "# 转换成有监督数据\n",
+    "def timeseries_to_supervised(data, lag=1):\n",
+    "    df = DataFrame(data)\n",
+    "    columns = [df.shift(i) for i in range(1, lag + 1)]  # 数据滑动一格，作为input，df原数据为output\n",
+    "    columns.append(df)\n",
+    "    df = concat(columns, axis=1)\n",
+    "    df.fillna(0, inplace=True)\n",
+    "    return df\n",
+    "\n",
+    "\n",
+    "# 转换成差分数据\n",
+    "def difference(dataset, interval=1):\n",
+    "    diff = list()\n",
+    "    for i in range(interval, len(dataset)):\n",
+    "        value = dataset[i] - dataset[i - interval]\n",
+    "        diff.append(value)\n",
+    "    return Series(diff)\n",
+    "\n",
+    "\n",
+    "# 逆差分\n",
+    "def inverse_difference(history, yhat, interval=1):  # 历史数据，预测数据，差分间隔\n",
+    "    return yhat + history[-interval]\n",
+    "\n",
+    "\n",
+    "# 缩放\n",
+    "def scale(train, test):\n",
+    "    # 根据训练数据建立缩放器\n",
+    "    scaler = MinMaxScaler(feature_range=(-1, 1))\n",
+    "    scaler = scaler.fit(train)\n",
+    "    # 转换train data\n",
+    "    train = train.reshape(train.shape[0], train.shape[1])\n",
+    "    train_scaled = scaler.transform(train)\n",
+    "    # 转换test data\n",
+    "    test = test.reshape(test.shape[0], test.shape[1])\n",
+    "    test_scaled = scaler.transform(test)\n",
+    "    return scaler, train_scaled, test_scaled\n",
+    "\n",
+    "\n",
+    "# 逆缩放\n",
+    "def invert_scale(scaler, X, value):\n",
+    "    new_row = [x for x in X] + [value]\n",
+    "    array = numpy.array(new_row)\n",
+    "    array = array.reshape(1, len(array))\n",
+    "    inverted = scaler.inverse_transform(array)\n",
+    "    return inverted[0, -1]\n",
+    "\n",
+    "# fit LSTM来训练数据\n",
+    "def fit_lstm(train, batch_size, nb_epoch, neurons):\n",
+    "    X, y = train[:, 0:-1], train[:, -1]\n",
+    "    X = X.reshape(X.shape[0], 1, X.shape[1])\n",
+    "    model = Sequential()\n",
+    "    # 添加LSTM层\n",
+    "    model.add(LSTM(neurons, batch_input_shape=(batch_size, X.shape[1], X.shape[2]), stateful=True))\n",
+    "    model.add(Dense(1))  # 输出层1个node\n",
+    "    # 编译，损失函数mse+优化算法adam\n",
+    "    model.compile(loss='mean_squared_error', optimizer='adam')\n",
+    "    for i in range(nb_epoch):\n",
+    "        # 按照batch_size，一次读取batch_size个数据\n",
+    "        model.fit(X, y, epochs=1, batch_size=batch_size, verbose=0, shuffle=False)\n",
+    "        model.reset_states()\n",
+    "        #print(\"当前计算次数：\"+str(i))\n",
+    "    return model\n",
+    "\n",
+    "\n",
+    "# 1步长预测\n",
+    "def forcast_lstm(model, batch_size, X):\n",
+    "    X = X.reshape(1, 1, len(X))\n",
+    "    yhat = model.predict(X, batch_size=batch_size)\n",
+    "    return yhat[0, 0]\n",
+    "\n",
+    "\n",
+    "# 加载数据\n",
+    "series = pd.read_excel(r'C:\\Users\\stu\\Desktop\\NEWDATA.xlsx')\n",
+    "# 让数据变成稳定的\n",
+    "raw_values = (series.values)[0:1050,0]\n",
+    "diff_values = difference(raw_values, 1)#转换成差分数据\n",
+    "\n",
+    "# 把稳定的数据变成有监督数据\n",
+    "supervised = timeseries_to_supervised(diff_values, 1)\n",
+    "supervised_values = supervised.values\n",
+    "\n",
+    "# 数据拆分：训练数据、测试数据，前24行是训练集，后12行是测试集\n",
+    "train, test = supervised_values[0:-50], supervised_values[-50:]\n",
+    "\n",
+    "# 数据缩放\n",
+    "scaler, train_scaled, test_scaled = scale(train, test)\n",
+    "\n",
+    "\n",
+    "\n",
+    "#重复实验   \n",
+    "repeats = 5\n",
+    "\n",
+    "\n",
+    "error_scores = list()\n",
+    "for r in range(repeats):\n",
+    "    # fit 模型\n",
+    "    lstm_model = fit_lstm(train_scaled, 1, 100, 40)  # 训练数据，batch_size，epoche次数, 神经元个数\n",
+    "    # 预测\n",
+    "    train_reshaped = train_scaled[:, 0].reshape(len(train_scaled), 1, 1)#训练数据集转换为可输入的矩阵\n",
+    "    lstm_model.predict(train_reshaped, batch_size=1)#用模型对训练数据矩阵进行预测\n",
+    "    # 测试数据的前向验证，实验发现，如果训练次数很少的话，模型回简单的把数据后移，以昨天的数据作为今天的预测值，当训练次数足够多的时候\n",
+    "    # 才会体现出来训练结果\n",
+    "    predictions = list()\n",
+    "    for i in range(len(test_scaled)):\n",
+    "        # 1步长预测\n",
+    "        X, y = test_scaled[i, 0:-1], test_scaled[i, -1]\n",
+    "        yhat = forcast_lstm(lstm_model, 1, X)\n",
+    "        # 逆缩放\n",
+    "        yhat = invert_scale(scaler, X, yhat)\n",
+    "        # 逆差分\n",
+    "        yhat = inverse_difference(raw_values, yhat, len(test_scaled) + 1 - i)\n",
+    "        predictions.append(yhat)\n",
+    "        expected = raw_values[len(train) + i + 1]\n",
+    "        #print('Moth=%d, Predicted=%f, Expected=%f' % (i + 1, yhat, expected))\n",
+    "    # 性能报告\n",
+    "    rmse = sqrt(mean_squared_error(raw_values[-50:], predictions))\n",
+    "    print('%d) Test RMSE:%.3f' %(r+1,rmse))\n",
+    "    error_scores.append(rmse)\n",
+    "\n",
+    "#统计信息   \n",
+    "results = DataFrame()\n",
+    "results['rmse'] = error_scores\n",
+    "print(results.describe())\n",
+    "results.boxplot()\n",
+    "pyplot.show()\n",
+    "elapsed = (time.clock() - start)\n",
+    "print(\"Time used:\",elapsed)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2020-12-13T07:01:22.095061Z",
+     "start_time": "2020-12-13T07:01:22.086494Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "MSE =  0.08966097722346483\n",
+      "RMSE =  0.2994344289213664\n",
+      "MAE =  0.2337937743059216\n"
+     ]
+    }
+   ],
+   "source": [
+    "zs=raw_values[-50:]\n",
+    "yuce=predictions\n",
+    "error = []\n",
+    "for i in range(len(zs)):\n",
+    "    error.append(zs[i] -yuce[i])\n",
+    "#print(\"Errors: \", error)\n",
+    "#print(error)\n",
+    "squaredError = []\n",
+    "absError = []\n",
+    "for val in error:    \n",
+    "    squaredError.append(val * val)#target-prediction之差平方     \n",
+    "    absError.append(abs(val))#误差绝对值  \n",
+    "   # print(\"Square Error: \", squaredError)\n",
+    "    #print(\"Absolute Value of Error: \", absError)    \n",
+    "print(\"MSE = \", sum(squaredError) / len(squaredError))#均方误差MSE    \n",
+    "from math import sqrt\n",
+    "print(\"RMSE = \", sqrt(sum(squaredError) / len(squaredError)))#均方根误差RMSE\n",
+    "print(\"MAE = \", sum(absError) / len(absError))#平均绝对误差MAE"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2020-09-04T06:07:32.160037Z",
+     "start_time": "2020-09-04T06:07:32.131056Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['Sheet1']\n"
+     ]
+    }
+   ],
+   "source": [
+    "import openpyxl as op\n",
+    "wb=op.load_workbook(r'C:\\Users\\stu\\Desktop\\lstm.xlsx')\n",
+    "print(wb.sheetnames)\n",
+    "ws=wb['Sheet1']\n",
+    "#yuce=yuce.tolist()\n",
+    "#escape(yuce).encode('utf-8')\n",
+    "for index,rw in enumerate(yuce):        \n",
+    "        ws.cell(row = index+1, column =5).value = rw\n",
+    "wb.save(r'C:\\Users\\stu\\Desktop\\lstm.xlsx')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "se1 = pd.read_excel(r'C:\\Users\\stu\\Desktop\\RDATA.xlsx').values\n",
+    "se2 = pd.read_excel(r'C:\\Users\\stu\\Desktop\\result.xlsx',sheet_name='Sheet1').values\n",
+    "zs=se1[:,3][-50:]\n",
+    "yuce=se2[:,3]\n",
+    "error = []\n",
+    "for i in range(len(zs)):\n",
+    "    error.append(zs[i] -yuce[i])\n",
+    "#print(\"Errors: \", error)\n",
+    "#print(error)\n",
+    "squaredError = []\n",
+    "absError = []\n",
+    "for val in error:    \n",
+    "    squaredError.append(val * val)#target-prediction之差平方     \n",
+    "    absError.append(abs(val))#误差绝对值  \n",
+    "   # print(\"Square Error: \", squaredError)\n",
+    "    #print(\"Absolute Value of Error: \", absError)    \n",
+    "print(\"MSE = \", sum(squaredError) / len(squaredError))#均方误差MSE    \n",
+    "from math import sqrt\n",
+    "print(\"RMSE = \", sqrt(sum(squaredError) / len(squaredError)))#均方根误差RMSE\n",
+    "print(\"MAE = \", sum(absError) / len(absError))#平均绝对误差MAE"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
